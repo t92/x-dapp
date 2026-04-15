@@ -1,0 +1,29 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "node": "hardhat node",
+    "deploy:local-assets": "node scripts/deploy-local-assets.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.28.2",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ethers": "^4.0.7",
+    "@nomicfoundation/hardhat-mocha": "^3.0.15",
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.3",
+    "@typechain/ethers-v6": "^0.5.1",
+    "hardhat": "^3.3.0",
+    "solc": "0.8.20",
+    "typechain": "^8.3.2"
+  },
+  "dependencies": {
+    "ethers": "^6.16.0"
+  }
+}

@@ -18,7 +18,7 @@ export default function Header() {
           <Sparkles className="w-6 h-6 text-indigo-300" />
         </div>
         <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-200 via-white to-fuchsia-200">
-          Nexus DApp
+          WEB3 Learning
         </h1>
       </div>
 

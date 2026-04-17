@@ -38,7 +38,7 @@ function getReadableError(error: unknown): string {
 }
 
 export default function RedPacketTab() {
-  const { signer, balance } = useWeb3Store();
+  const { signer, balance, connectWallet } = useWeb3Store();
   const {
     register,
     handleSubmit,
@@ -132,20 +132,20 @@ export default function RedPacketTab() {
       const tx =
         payload.token === ZeroAddress
           ? await contract.createRedPacket(
-              payload.token,
-              payload.totalAmount,
-              payload.count,
-              payload.packetType,
-              payload.message,
-              { value: payload.totalAmount }
-            )
+            payload.token,
+            payload.totalAmount,
+            payload.count,
+            payload.packetType,
+            payload.message,
+            { value: payload.totalAmount }
+          )
           : await contract.createRedPacket(
-              payload.token,
-              payload.totalAmount,
-              payload.count,
-              payload.packetType,
-              payload.message
-            );
+            payload.token,
+            payload.totalAmount,
+            payload.count,
+            payload.packetType,
+            payload.message
+          );
       const receipt = await tx.wait();
       if (!receipt || Number(receipt.status) !== 1) {
         toast.error("Create transaction failed", toastOption);
@@ -182,6 +182,7 @@ export default function RedPacketTab() {
       } catch {
         toast.success(`Packet #${packetId.toString()} created. Link: ${claimLink}`, toastOption);
       }
+      await connectWallet()
     } catch (error) {
       console.error(error);
       toast.error(`Create failed: ${getReadableError(error)}`, toastOption);

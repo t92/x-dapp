@@ -1,13 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-interface IERC20 {
-    function transferFrom(address from, address to, uint256 value) external returns (bool);
 
-    function transfer(address to, uint256 value) external returns (bool);
-
-    function balanceOf(address account) external view returns (uint256);
-}
+import "./token_interface/ERC20.sol";
 
 contract RedPacket {
     uint8 public constant PACKET_TYPE_RANDOM = 0;
@@ -45,11 +40,12 @@ contract RedPacket {
 
     uint256 public nextPacketId = 1;
 
-    mapping(uint256 => Packet) public packets;
-    mapping(bytes32 => uint256) public packetIdByCodeHash;
-    mapping(uint256 => bytes32) public codeHashByPacketId;
-    mapping(uint256 => mapping(address => ClaimInfo)) public claimInfoByPacketAndUser;
-    mapping(address => uint256[]) private userClaimedPacketIds;
+    mapping(uint256 => Packet) public packets; // 缓存红包
+    mapping(bytes32 => uint256) public packetIdByCodeHash; //缓存红包id, 通过codehash获取
+    mapping(uint256 => bytes32) public codeHashByPacketId; //缓存红包codehash 通过 id 获取
+    mapping(uint256 => mapping(address => ClaimInfo))
+        public claimInfoByPacketAndUser; //缓存红包领取信息
+    mapping(address => uint256[]) private userClaimedPacketIds; //缓存用户领取的所有红包id
 
     event PacketCreated(
         uint256 indexed packetId,
@@ -62,9 +58,17 @@ contract RedPacket {
         bytes32 codeHash
     );
 
-    event PacketClaimed(uint256 indexed packetId, address indexed claimer, uint256 amount);
+    event PacketClaimed(
+        uint256 indexed packetId,
+        address indexed claimer,
+        uint256 amount
+    );
 
-    event PacketRefunded(uint256 indexed packetId, address indexed sender, uint256 amount);
+    event PacketRefunded(
+        uint256 indexed packetId,
+        address indexed sender,
+        uint256 amount
+    );
 
     function createRedPacket(
         address token,
@@ -80,7 +84,10 @@ contract RedPacket {
             "invalid packetType"
         );
         if (packetType == PACKET_TYPE_EQUAL) {
-            require(totalAmount % count == 0, "equal packet requires divisible amount");
+            require(
+                totalAmount % count == 0,
+                "equal packet requires divisible amount"
+            );
         }
 
         if (token == address(0)) {
@@ -88,7 +95,14 @@ contract RedPacket {
         } else {
             require(msg.value == 0, "dont send eth for token packet");
             uint256 balanceBefore = IERC20(token).balanceOf(address(this));
-            require(IERC20(token).transferFrom(msg.sender, address(this), totalAmount), "transferFrom failed");
+            require(
+                IERC20(token).transferFrom(
+                    msg.sender,
+                    address(this),
+                    totalAmount
+                ),
+                "transferFrom failed"
+            );
             uint256 balanceAfter = IERC20(token).balanceOf(address(this));
             require(balanceAfter >= balanceBefore, "invalid token balance");
             require(
@@ -260,7 +274,11 @@ contract RedPacket {
         address user,
         uint256 offset,
         uint256 limit
-    ) external view returns (ClaimedPacketView[] memory records, uint256 total) {
+    )
+        external
+        view
+        returns (ClaimedPacketView[] memory records, uint256 total)
+    {
         uint256[] storage ids = userClaimedPacketIds[user];
         total = ids.length;
 
@@ -300,7 +318,10 @@ contract RedPacket {
         return IERC20(token).balanceOf(msg.sender);
     }
 
-    function _takeClaimAmount(uint256 packetId, address claimer) internal view returns (uint256 amount) {
+    function _takeClaimAmount(
+        uint256 packetId,
+        address claimer
+    ) internal view returns (uint256 amount) {
         Packet storage packet = packets[packetId];
 
         if (packet.remainingCount == 1) {
@@ -336,7 +357,10 @@ contract RedPacket {
             (bool ok, ) = payable(to).call{value: amount}("");
             require(ok, "ETH transfer failed");
         } else {
-            require(IERC20(token).transfer(to, amount), "token transfer failed");
+            require(
+                IERC20(token).transfer(to, amount),
+                "token transfer failed"
+            );
         }
     }
 

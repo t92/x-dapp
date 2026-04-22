@@ -70,7 +70,7 @@ export default function AddProductDialog({ open, onClose }: AddProductDialogProp
     }
     data.chain_id = productId.toString();
     console.log(data)
-    const response = await fetch("http://localhost:8787/add_product", {
+    const response = await fetch(`${process.env.BASE_URL}/add_product`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -19,7 +19,7 @@ export default function PurchaseRecordsDialog({ open, onClose }: PurchaseRecords
 
   const loadRecords = useCallback(async () => {
     if (!account) return;
-    const res: ApiResponse<Product[]> = await fetch(`http://localhost:8787/get_orders?address=${account}`)
+    const res: ApiResponse<Product[]> = await fetch(`${process.env.BASE_URL}/get_orders?address=${account}`)
       .then(_ => _.json())
     if (res.code === 200) {
       setRecords(res.data || [])

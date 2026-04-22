@@ -17,7 +17,7 @@ const toastOption = {
 }
 
 async function getProducts(): Promise<Product[]> {
-  const response = await fetch(`${process.env.BASE_URL}/get_products`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/get_products`, {
     headers: {
       "Content-Type": "application/json",
     },
@@ -114,7 +114,7 @@ export default function ShopTab() {
         const buyTx = await goodsWriteContract.buy(onchainProductId);
         await buyTx.wait();
 
-        const response = await fetch(`${process.env.BASE_URL}/buy_product`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/buy_product`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
